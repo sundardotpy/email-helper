@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate Ops Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Custom scrollbar to keep layout clean and minimal */
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: #121214; }
+        ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #05a54b; }
+    </style>
+</head>
+<body class="bg-[#0b0b0c] text-zinc-300 min-h-screen flex font-sans">
+
+    <aside class="w-64 bg-[#121214] border-r border-zinc-800 flex flex-col justify-between p-4 shrink-0">
+        <div>
+            <div class="flex items-center justify-between mb-5 px-2">
+                <h1 class="text-lg font-bold text-white tracking-wider">Ops<span class="text-[#05a54b]">Core</span></h1>
+                <span class="text-[11px] bg-zinc-800 px-2 py-0.5 rounded text-zinc-400 font-mono" title="Logged in user">@{{ session['username'] }}</span>
+            </div>
+
+            <div class="mb-5 bg-[#1a1a1e] p-3 rounded-lg border border-zinc-800">
+                <p class="text-[10px] uppercase tracking-widest font-bold text-zinc-500 mb-2 px-1">⚡ Quick Launch Desk</p>
+                <div class="grid grid-cols-5 gap-1.5 mb-2">
+                    <a href="https://docs.google.com/spreadsheets/d/1mnfKgyBVN8d8ikm1trWpmyo1sAKk_SOXh3yZRbl9dgA/edit?gid=245013635#gid=245013635" target="_blank" 
+                       class="bg-zinc-800 hover:bg-[#05a54b] hover:text-white text-zinc-400 text-center py-2 rounded transition text-xs" title="Google Sheet Daily Emails">
+                        <i class="fa-solid fa-file-excel"></i>
+                    </a>
+                    <a href="https://app.appsmith.com/app/finder/" target="_blank" 
+                       class="bg-zinc-800 hover:bg-[#05a54b] hover:text-white text-zinc-400 text-center py-2 rounded transition text-xs" title="Appsmith Finder">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </a>
+                    <a href="https://chatgpt.com/" target="_blank" 
+                       class="bg-zinc-800 hover:bg-[#05a54b] hover:text-white text-zinc-400 text-center py-2 rounded transition text-xs" title="ChatGPT">
+                        <i class="fa-solid fa-robot"></i>
+                    </a>
+                    <a href="https://wint-ir-portal.vercel.app/" target="_blank" 
+                       class="bg-zinc-800 hover:bg-[#05a54b] hover:text-white text-zinc-400 text-center py-2 rounded transition text-xs" title="Wint IR Portal">
+                        <i class="fa-solid fa-globe"></i>
+                    </a>
+                    <a href="https://drive.google.com/drive/my-drive" target="_blank" 
+                       class="bg-zinc-800 hover:bg-[#05a54b] hover:text-white text-zinc-400 text-center py-2 rounded transition text-xs" title="Google Drive">
+                        <i class="fa-solid fa-hard-drive"></i>
+                    </a>
+                </div>
+                <button onclick="openAllTabs()" class="w-full bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-500 hover:text-zinc-300 text-[10px] font-medium py-1 rounded transition">
+                    Force Open All Tabs
+                </button>
+            </div>
+
+            <div class="space-y-1">
+                <div class="flex items-center justify-between px-2 mb-1">
+                    <p class="text-[10px] uppercase tracking-widest font-bold text-zinc-500">Shortcut Links</p>
+                    <button onclick="toggleForm('add-link-form')" class="text-zinc-500 hover:text-[#05a54b] text-xs"><i class="fa-solid fa-plus-circle"></i></button>
+                </div>
+
+                <div id="add-link-form" class="hidden bg-[#1a1a1e] p-2 rounded mb-2 border border-zinc-700/50">
+                    <form action="/add/link" method="POST" class="space-y-2">
+                        <input type="text" name="name" placeholder="Link Title" required class="w-full text-[11px] bg-[#121214] border border-zinc-700 rounded p-1 text-white focus:outline-none">
+                        <input type="url" name="url" placeholder="https://" required class="w-full text-[11px] bg-[#121214] border border-zinc-700 rounded p-1 text-white focus:outline-none">
+                        {% if session['is_admin'] %}
+                        <label class="flex items-center gap-1 text-[10px] text-zinc-400">
+                            <input type="checkbox" name="is_universal" value="1"> Make Universal
+                        </label>
+                        {% endif %}
+                        <button type="submit" class="w-full bg-[#05a54b] text-[10px] py-1 text-white rounded font-bold">Save Link</button>
+                    </form>
+                </div>
+
+                <div class="max-h-[300px] overflow-y-auto space-y-0.5">
+                    {% for link in links %}
+                    <div class="flex items-center justify-between p-1.5 rounded hover:bg-[#1a1a1e] text-xs group">
+                        <a href="{{ link.url }}" target="_blank" class="truncate max-w-[160px] text-zinc-400 hover:text-white flex items-center">
+                            <i class="fa-solid fa-link text-zinc-600 mr-2 text-[10px]"></i>{{ link.name }}
+                        </a>
+                        <div class="flex items-center gap-1.5">
+                            {% if link.is_universal %}<i class="fa-solid fa-globe text-[10px] text-zinc-600" title="Universal"></i>{% endif %}
+                            {% if session['is_admin'] or not link.is_universal %}
+                            <a href="/delete/link/{{ link.id }}" class="text-zinc-600 hover:text-red-500 opacity-0 group-hover:opacity-100 transition text-[10px]"><i class="fa-regular fa-trash-can"></i></a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <a href="/logout" class="w-full bg-zinc-900 hover:bg-zinc-800 text-center text-xs text-zinc-400 py-2 rounded border border-zinc-800 transition">Sign Out System</a>
+    </aside>
+
+    <main class="flex-1 p-6 overflow-y-auto h-screen">
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+
+            <div class="space-y-6">
+                <div class="bg-[#121214] border border-zinc-800 rounded-xl p-4">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-500 mb-3"><i class="fa-solid fa-wallet text-[#05a54b] mr-1.5"></i> Gateway Terminals</h3>
+                    <div class="space-y-2">
+                        <div class="bg-[#1a1a1e] p-2 rounded border border-zinc-800 flex items-center justify-between">
+                            <div class="truncate text-xs">
+                                <span class="text-white block font-semibold text-[11px]">Cashfree Primary</span>
+                                <span class="text-zinc-500 font-mono text-[11px]">care@cashfree.com</span>
+                            </div>
+                            <button onclick="copyToClipboard('care@cashfree.com', this)" class="text-zinc-500 hover:text-[#05a54b] p-1"><i class="fa-regular fa-copy"></i></button>
+                        </div>
+                        <div class="bg-[#1a1a1e] p-2 rounded border border-zinc-800 flex items-center justify-between">
+                            <div class="truncate text-xs">
+                                <span class="text-white block font-semibold text-[11px]">Cashfree CC Desk</span>
+                                <span class="text-zinc-500 font-mono text-[10px]">srinivas, abdul, jasleen</span>
+                            </div>
+                            <button onclick="copyToClipboard('srinivas.v@cashfree.com, abdul.poonawala@cashfree.com, jasleen.kaur@cashfree.com', this)" class="text-zinc-500 hover:text-[#05a54b] p-1"><i class="fa-regular fa-copy"></i></button>
+                        </div>
+                        <div class="bg-[#1a1a1e] p-2 rounded border border-zinc-800 flex items-center justify-between">
+                            <div class="truncate text-xs">
+                                <span class="text-white block font-semibold text-[11px]">Razorpay Operations</span>
+                                <span class="text-zinc-500 font-mono text-[11px]">enterprise-tech@razorpay.com</span>
+                            </div>
+                            <button onclick="copyToClipboard('enterprise-tech@razorpay.com', this)" class="text-zinc-500 hover:text-[#05a54b] p-1"><i class="fa-regular fa-copy"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-[#121214] border border-zinc-800 rounded-xl p-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-500"><i class="fa-solid fa-circle-nodes text-[#05a54b] mr-1.5"></i> Operational Tickets</h3>
+                        <button onclick="toggleForm('add-ticket-form')" class="text-[11px] text-[#05a54b] font-bold hover:underline"><i class="fa-solid fa-plus mr-1"></i>New Card</button>
+                    </div>
+
+                    <div id="add-ticket-form" class="hidden bg-[#1a1a1e] p-3 rounded-lg border border-zinc-700 mb-3">
+                        <form action="/add/ticket" method="POST" class="space-y-2">
+                            <input type="url" name="ticket_link" placeholder="Paste CRM Ticket Link" required class="w-full text-xs bg-[#121214] border border-zinc-700 rounded p-1.5 text-white focus:outline-none">
+                            <input type="url" name="slack_link" placeholder="Paste Slack Message Link" required class="w-full text-xs bg-[#121214] border border-zinc-700 rounded p-1.5 text-white focus:outline-none">
+                            <select name="status" class="w-full text-xs bg-[#121214] border border-zinc-700 rounded p-1.5 text-zinc-400 focus:outline-none">
+                                <option value="Resolution Pending">Resolution Pending (Internal)</option>
+                                <option value="Working on it">Working on it</option>
+                            </select>
+                            <button type="submit" class="w-full bg-[#05a54b] text-xs text-white py-1 rounded font-bold">Deploy Card</button>
+                        </form>
+                    </div>
+
+                    <div class="space-y-2 max-h-[300px] overflow-y-auto">
+                        {% for ticket in tickets %}
+                        <div class="bg-[#1a1a1e] p-2 rounded border-l-4 {% if ticket.status == 'Working on it' %}border-amber-500{% else %}border-red-500{% endif %} flex items-center justify-between">
+                            <span class="text-[10px] font-bold text-zinc-300 bg-[#121214] px-1.5 py-0.5 rounded border border-zinc-800">{{ ticket.status }}</span>
+                            <div class="flex items-center gap-1">
+                                <a href="{{ ticket.ticket_link }}" target="_blank" class="bg-[#121214] text-[10px] px-2 py-1 rounded text-zinc-400 hover:text-white border border-zinc-800"><i class="fa-solid fa-ticket mr-1"></i>Ticket</a>
+                                <a href="{{ ticket.slack_link }}" target="_blank" class="bg-[#121214] text-[10px] px-2 py-1 rounded text-zinc-400 hover:text-white border border-zinc-800"><i class="fa-brands fa-slack text-amber-500 mr-1"></i>Slack</a>
+                                <a href="/delete/ticket/{{ ticket.id }}" class="text-zinc-600 hover:text-red-500 p-1 text-[10px] ml-1"><i class="fa-regular fa-trash-can"></i></a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-[#121214] border border-zinc-800 rounded-xl p-4 flex flex-col h-fit">
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-500"><i class="fa-regular fa-envelope text-[#05a54b] mr-1.5"></i> Response Templates</h3>
+                    <button onclick="toggleForm('add-template-form')" class="text-[11px] text-[#05a54b] font-bold hover:underline"><i class="fa-solid fa-plus mr-1"></i>New Template</button>
+                </div>
+
+                <input type="text" id="templateSearch" onkeyup="searchTemplates()" placeholder="⚡ Fast query search templates..." class="w-full text-xs bg-[#1a1a1e] border border-zinc-700 rounded-lg p-2 mb-3 text-white focus:outline-none focus:border-[#05a54b]">
+
+                <div id="add-template-form" class="hidden bg-[#1a1a1e] p-3 rounded-lg border border-zinc-700 mb-3">
+                    <form action="/add/template" method="POST" class="space-y-2">
+                        <input type="text" name="title" placeholder="Template Identifier/Subject" required class="w-full text-xs bg-[#121214] border border-zinc-700 rounded p-1.5 text-white focus:outline-none">
+                        <textarea name="content" rows="4" placeholder="Draft complete raw email content body..." required class="w-full text-xs bg-[#121214] border border-zinc-700 rounded p-1.5 text-white focus:outline-none"></textarea>
+                        {% if session['is_admin'] %}
+                        <label class="flex items-center gap-1 text-[10px] text-zinc-400">
+                            <input type="checkbox" name="is_universal" value="1"> Make Universal (All Agents View)
+                        </label>
+                        {% endif %}
+                        <button type="submit" class="w-full bg-[#05a54b] text-xs text-white py-1 rounded font-bold">Commit Template</button>
+                    </form>
+                </div>
+
+                <div id="templatesList" class="space-y-2 max-h-[500px] overflow-y-auto">
+                    {% for temp in templates %}
+                    <div class="template-card bg-[#1a1a1e] p-2.5 rounded border border-zinc-800/80 flex flex-col">
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="text-xs font-bold text-white truncate template-title">{{ temp.title }}</span>
+                            <div class="flex items-center gap-2 shrink-0">
+                                {% if temp.is_universal %}<i class="fa-solid fa-globe text-[10px] text-zinc-600" title="Universal Item"></i>{% endif %}
+                                <button onclick="copyTemplateText(this)" class="text-[10px] text-zinc-400 hover:text-white px-2 py-0.5 bg-[#121214] rounded border border-zinc-700 hover:border-[#05a54b] transition"><i class="fa-regular fa-copy text-[#05a54b] mr-1"></i>Copy</button>
+                                {% if session['is_admin'] or not temp.is_universal %}
+                                <a href="/delete/template/{{ temp.id }}" class="text-zinc-600 hover:text-red-500 text-[10px]"><i class="fa-regular fa-trash-can"></i></a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <p class="text-xs text-zinc-400 whitespace-pre-line hidden bg-[#121214] p-2 rounded mt-2 font-mono text-[11px] border border-zinc-900 template-body">{{ temp.content }}</p>
+                        <span class="text-[10px] text-zinc-500 mt-1.5 cursor-pointer block hover:text-zinc-400 transition" onclick="this.previousElementSibling.classList.toggle('hidden')"><i class="fa-regular fa-eye mr-1"></i>Toggle Sheet Preview</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="space-y-6">
+                <div class="bg-[#121214] border border-zinc-800 rounded-xl p-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-500"><i class="fa-solid fa-wand-magic-sparkles text-[#05a54b] mr-1.5"></i> Prompts Setup</h3>
+                        <button onclick="toggleForm('add-prompt-form')" class="text-[11px] text-[#05a54b] font-bold hover:underline"><i class="fa-solid fa-plus mr-1"></i>New</button>
+                    </div>
+
+                    <div id="add-prompt-form" class="hidden bg-[#1a1a1e] p-3 rounded-lg border border-zinc-700 mb-3">
+                        <form action="/add/prompt" method="POST" class="space-y-2">
+                            <input type="text" name="title" placeholder="Context Title Name" required class="w-full text-xs bg-[#121214] border border-zinc-700 rounded p-1.5 text-white focus:outline-none">
+                            <textarea name="content" rows="2" placeholder="System copy instructions..." required class="w-full text-xs bg-[#121214] border border-zinc-700 rounded p-1.5 text-white focus:outline-none"></textarea>
+                            {% if session['is_admin'] %}
+                            <label class="flex items-center gap-1 text-[10px] text-zinc-400"><input type="checkbox" name="is_universal" value="1"> Universal</label>
+                            {% endif %}
+                            <button type="submit" class="w-full bg-zinc-800 text-xs text-white py-1 rounded">Save Instruction</button>
+                        </form>
+                    </div>
+
+                    <div class="space-y-2 max-h-[220px] overflow-y-auto">
+                        {% for pr in prompts %}
+                        <div class="bg-[#1a1a1e] p-2 rounded border border-zinc-800 group">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-[11px] font-bold text-zinc-300 truncate max-w-[140px]">{{ pr.title }}</span>
+                                <div class="flex items-center gap-1.5">
+                                    <button onclick="copyToClipboard(this.getAttribute('data-text'), this)" data-text="{{ pr.content }}" class="text-[10px] text-zinc-500 hover:text-[#05a54b]"><i class="fa-regular fa-copy"></i></button>
+                                    {% if session['is_admin'] or not pr.is_universal %}
+                                    <a href="/delete/prompt/{{ pr.id }}" class="text-zinc-600 hover:text-red-500 text-[10px]"><i class="fa-regular fa-trash-can"></i></a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <p class="text-[11px] text-zinc-500 bg-[#121214] p-1 rounded truncate select-all">{{ pr.content }}</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="bg-[#121214] border border-zinc-800 rounded-xl p-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-500"><i class="fa-solid fa-book text-[#05a54b] mr-1.5"></i> Adjustable SOP Index</h3>
+                        <button onclick="toggleForm('add-sop-form')" class="text-[11px] text-[#05a54b] font-bold hover:underline"><i class="fa-solid fa-plus mr-1"></i>New Docs</button>
+                    </div>
+
+                    <div id="add-sop-form" class="hidden bg-[#1a1a1e] p-3 rounded-lg border border-zinc-700 mb-3">
+                        <form action="/add/sop" method="POST" class="space-y-2">
+                            <input type="text" name="name" placeholder="SOP Title" required class="w-full text-xs bg-[#121214] border border-zinc-700 rounded p-1.5 text-white focus:outline-none">
+                            <input type="url" name="url" placeholder="Google Doc Link" required class="w-full text-xs bg-[#121214] border border-zinc-700 rounded p-1.5 text-white focus:outline-none">
+                            {% if session['is_admin'] %}
+                            <label class="flex items-center gap-1 text-[10px] text-zinc-400"><input type="checkbox" name="is_universal" value="1"> Universal</label>
+                            {% endif %}
+                            <button type="submit" class="w-full bg-zinc-800 text-xs text-white py-1 rounded">Log Index Document</button>
+                        </form>
+                    </div>
+
+                    <div class="space-y-1.5 max-h-[220px] overflow-y-auto">
+                        {% for sop in sops %}
+                        <div class="bg-[#1a1a1e] p-2 rounded border border-zinc-800 flex flex-col gap-1 group">
+                            <div class="flex items-center justify-between">
+                                <a href="{{ sop.url }}" target="_blank" class="text-xs text-zinc-300 hover:text-white font-medium truncate max-w-[150px]">
+                                    <i class="fa-regular fa-file-lines text-zinc-500 mr-2 group-hover:text-[#05a54b]"></i>{{ sop.name }}
+                                </a>
+                                <div class="flex items-center gap-2">
+                                    <button onclick="toggleForm('edit-sop-{{ sop.id }}')" class="text-zinc-500 hover:text-[#05a54b] text-[10px]" title="Edit Inline"><i class="fa-regular fa-pen-to-square"></i></button>
+                                    {% if session['is_admin'] or not sop.is_universal %}
+                                    <a href="/delete/sop/{{ sop.id }}" class="text-zinc-600 hover:text-red-500 text-[10px]"><i class="fa-regular fa-trash-can"></i></a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div id="edit-sop-{{ sop.id }}" class="hidden pt-2 border-t border-zinc-800 mt-1">
+                                <form action="/edit_sop/{{ sop.id }}" method="POST" class="space-y-1.5">
+                                    <input type="text" name="name" value="{{ sop.name }}" required class="w-full text-[11px] bg-[#121214] border border-zinc-700 rounded p-1 text-white focus:outline-none">
+                                    <input type="url" name="url" value="{{ sop.url }}" required class="w-full text-[11px] bg-[#121214] border border-zinc-700 rounded p-1 text-white focus:outline-none">
+                                    <button type="submit" class="bg-[#05a54b] text-[10px] text-white px-2 py-0.5 rounded font-bold">Save Change</button>
+                                </form>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                {% if session['is_admin'] %}
+                <div class="bg-[#1c1212] border border-red-900/40 rounded-xl p-4">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-red-400 mb-3"><i class="fa-solid fa-users-gear mr-1.5"></i> Admin System Manager</h3>
+                    <div class="space-y-1.5 max-h-[180px] overflow-y-auto">
+                        {% for usr in all_users %}
+                        <div class="flex items-center justify-between text-xs bg-[#121214] p-2 rounded border border-zinc-800">
+                            <span class="font-medium text-zinc-300"><i class="fa-regular fa-user mr-2 text-zinc-500"></i>{{ usr.username }}</span>
+                            <a href="/admin/delete_user/{{ usr.id }}" onclick="return confirm('Completely purge this user profile and un-universal records?')" class="text-red-500 hover:underline text-[11px] font-semibold">Terminate User</a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        // Toggle control for hidden input structures
+        function toggleForm(id) { 
+            document.getElementById(id).classList.toggle('hidden'); 
+        }
+        
+        // Force workspace window generator fallback
+        function openAllTabs() {
+            const urls = [
+                "https://docs.google.com/spreadsheets/d/1mnfKgyBVN8d8ikm1trWpmyo1sAKk_SOXh3yZRbl9dgA/edit?gid=245013635#gid=245013635",
+                "https://app.appsmith.com/app/finder/",
+                "https://chatgpt.com/",
+                "https://wint-ir-portal.vercel.app/",
+                "https://drive.google.com/drive/my-drive"
+            ];
+            urls.forEach(url => window.open(url, '_blank'));
+        }
+
+        // Clip board process controller
+        function copyToClipboard(text, btn) {
+            navigator.clipboard.writeText(text).then(() => {
+                const icon = btn.innerHTML;
+                btn.innerHTML = '<i class="fa-solid fa-check text-[#05a54b]"></i>';
+                setTimeout(() => btn.innerHTML = icon, 1200);
+            });
+        }
+
+        // Email block copy manager
+        function copyTemplateText(btn) {
+            const card = btn.closest('.template-card');
+            const body = card.querySelector('.template-body').innerText;
+            navigator.clipboard.writeText(body).then(() => {
+                const txt = btn.innerHTML;
+                btn.innerHTML = '<i class="fa-solid fa-check text-[#05a54b]"></i>';
+                setTimeout(() => btn.innerHTML = txt, 1200);
+            });
+        }
+
+        // Instant matching system filter
+        function searchTemplates() {
+            let filter = document.getElementById('templateSearch').value.toLowerCase();
+            let cards = document.getElementsByClassName('template-card');
+            for (let i = 0; i < cards.length; i++) {
+                let title = cards[i].querySelector('.template-title').innerText.toLowerCase();
+                cards[i].style.display = title.includes(filter) ? "" : "none";
+            }
+        }
+    </script>
+</body>
+</html>

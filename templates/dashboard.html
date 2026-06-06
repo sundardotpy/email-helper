@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ultimate Ops Dashboard</title>
+    <title>Email Buddy</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -19,7 +19,7 @@
     <aside class="w-64 bg-[#121214] border-r border-zinc-800 flex flex-col justify-between p-4 shrink-0">
         <div>
             <div class="flex items-center justify-between mb-5 px-2">
-                <h1 class="text-lg font-bold text-white tracking-wider">Ops<span class="text-[#05a54b]">Core</span></h1>
+                <h1 class="text-lg font-bold text-white tracking-wider">Email<span class="text-[#05a54b]"> Buddy</span></h1>
                 <span class="text-[11px] bg-zinc-800 px-2 py-0.5 rounded text-zinc-400 font-mono" title="Logged in user">@{{ session['username'] }}</span>
             </div>
 
@@ -97,7 +97,7 @@
 
             <div class="space-y-6">
                 <div class="bg-[#121214] border border-zinc-800 rounded-xl p-4">
-                    <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-500 mb-3"><i class="fa-solid fa-wallet text-[#05a54b] mr-1.5"></i> Gateway Terminals</h3>
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-500 mb-3"><i class="fa-solid fa-wallet text-[#05a54b] mr-1.5"></i>PG Contact details</h3>
                     <div class="space-y-2">
                         <div class="bg-[#1a1a1e] p-2 rounded border border-zinc-800 flex items-center justify-between">
                             <div class="truncate text-xs">
@@ -108,14 +108,14 @@
                         </div>
                         <div class="bg-[#1a1a1e] p-2 rounded border border-zinc-800 flex items-center justify-between">
                             <div class="truncate text-xs">
-                                <span class="text-white block font-semibold text-[11px]">Cashfree CC Desk</span>
+                                <span class="text-white block font-semibold text-[11px]">Cashfree CC</span>
                                 <span class="text-zinc-500 font-mono text-[10px]">srinivas, abdul, jasleen</span>
                             </div>
                             <button onclick="copyToClipboard('srinivas.v@cashfree.com, abdul.poonawala@cashfree.com, jasleen.kaur@cashfree.com', this)" class="text-zinc-500 hover:text-[#05a54b] p-1"><i class="fa-regular fa-copy"></i></button>
                         </div>
                         <div class="bg-[#1a1a1e] p-2 rounded border border-zinc-800 flex items-center justify-between">
                             <div class="truncate text-xs">
-                                <span class="text-white block font-semibold text-[11px]">Razorpay Operations</span>
+                                <span class="text-white block font-semibold text-[11px]">Razorpay</span>
                                 <span class="text-zinc-500 font-mono text-[11px]">enterprise-tech@razorpay.com</span>
                             </div>
                             <button onclick="copyToClipboard('enterprise-tech@razorpay.com', this)" class="text-zinc-500 hover:text-[#05a54b] p-1"><i class="fa-regular fa-copy"></i></button>
@@ -125,19 +125,19 @@
 
                 <div class="bg-[#121214] border border-zinc-800 rounded-xl p-4">
                     <div class="flex items-center justify-between mb-3">
-                        <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-500"><i class="fa-solid fa-circle-nodes text-[#05a54b] mr-1.5"></i> Operational Tickets</h3>
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-500"><i class="fa-solid fa-circle-nodes text-[#05a54b] mr-1.5"></i> Tickets to comeback</h3>
                         <button onclick="toggleForm('add-ticket-form')" class="text-[11px] text-[#05a54b] font-bold hover:underline"><i class="fa-solid fa-plus mr-1"></i>New Card</button>
                     </div>
 
                     <div id="add-ticket-form" class="hidden bg-[#1a1a1e] p-3 rounded-lg border border-zinc-700 mb-3">
                         <form action="/add/ticket" method="POST" class="space-y-2">
-                            <input type="url" name="ticket_link" placeholder="Paste CRM Ticket Link" required class="w-full text-xs bg-[#121214] border border-zinc-700 rounded p-1.5 text-white focus:outline-none">
-                            <input type="url" name="slack_link" placeholder="Paste Slack Message Link" required class="w-full text-xs bg-[#121214] border border-zinc-700 rounded p-1.5 text-white focus:outline-none">
+                            <input type="url" name="ticket_link" placeholder="Paste Ticket Link" required class="w-full text-xs bg-[#121214] border border-zinc-700 rounded p-1.5 text-white focus:outline-none">
+                            <input type="url" name="slack_link" placeholder="Paste Slack Raised Link" required class="w-full text-xs bg-[#121214] border border-zinc-700 rounded p-1.5 text-white focus:outline-none">
                             <select name="status" class="w-full text-xs bg-[#121214] border border-zinc-700 rounded p-1.5 text-zinc-400 focus:outline-none">
                                 <option value="Resolution Pending">Resolution Pending (Internal)</option>
                                 <option value="Working on it">Working on it</option>
                             </select>
-                            <button type="submit" class="w-full bg-[#05a54b] text-xs text-white py-1 rounded font-bold">Deploy Card</button>
+                            <button type="submit" class="w-full bg-[#05a54b] text-xs text-white py-1 rounded font-bold">Add Card</button>
                         </form>
                     </div>
 
@@ -158,11 +158,11 @@
 
             <div class="bg-[#121214] border border-zinc-800 rounded-xl p-4 flex flex-col h-fit">
                 <div class="flex items-center justify-between mb-3">
-                    <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-500"><i class="fa-regular fa-envelope text-[#05a54b] mr-1.5"></i> Response Templates</h3>
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-500"><i class="fa-regular fa-envelope text-[#05a54b] mr-1.5"></i> Templates</h3>
                     <button onclick="toggleForm('add-template-form')" class="text-[11px] text-[#05a54b] font-bold hover:underline"><i class="fa-solid fa-plus mr-1"></i>New Template</button>
                 </div>
 
-                <input type="text" id="templateSearch" onkeyup="searchTemplates()" placeholder="⚡ Fast query search templates..." class="w-full text-xs bg-[#1a1a1e] border border-zinc-700 rounded-lg p-2 mb-3 text-white focus:outline-none focus:border-[#05a54b]">
+                <input type="text" id="templateSearch" onkeyup="searchTemplates()" placeholder="⚡ search templates..." class="w-full text-xs bg-[#1a1a1e] border border-zinc-700 rounded-lg p-2 mb-3 text-white focus:outline-none focus:border-[#05a54b]">
 
                 <div id="add-template-form" class="hidden bg-[#1a1a1e] p-3 rounded-lg border border-zinc-700 mb-3">
                     <form action="/add/template" method="POST" class="space-y-2">
@@ -173,7 +173,7 @@
                             <input type="checkbox" name="is_universal" value="1"> Make Universal (All Agents View)
                         </label>
                         {% endif %}
-                        <button type="submit" class="w-full bg-[#05a54b] text-xs text-white py-1 rounded font-bold">Commit Template</button>
+                        <button type="submit" class="w-full bg-[#05a54b] text-xs text-white py-1 rounded font-bold">Add Template</button>
                     </form>
                 </div>
 
@@ -200,7 +200,7 @@
             <div class="space-y-6">
                 <div class="bg-[#121214] border border-zinc-800 rounded-xl p-4">
                     <div class="flex items-center justify-between mb-3">
-                        <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-500"><i class="fa-solid fa-wand-magic-sparkles text-[#05a54b] mr-1.5"></i> Prompts Setup</h3>
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-500"><i class="fa-solid fa-wand-magic-sparkles text-[#05a54b] mr-1.5"></i> Prompts</h3>
                         <button onclick="toggleForm('add-prompt-form')" class="text-[11px] text-[#05a54b] font-bold hover:underline"><i class="fa-solid fa-plus mr-1"></i>New</button>
                     </div>
 
@@ -235,7 +235,7 @@
 
                 <div class="bg-[#121214] border border-zinc-800 rounded-xl p-4">
                     <div class="flex items-center justify-between mb-3">
-                        <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-500"><i class="fa-solid fa-book text-[#05a54b] mr-1.5"></i> Adjustable SOP Index</h3>
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-500"><i class="fa-solid fa-book text-[#05a54b] mr-1.5"></i> SOPs</h3>
                         <button onclick="toggleForm('add-sop-form')" class="text-[11px] text-[#05a54b] font-bold hover:underline"><i class="fa-solid fa-plus mr-1"></i>New Docs</button>
                     </div>
 
@@ -246,7 +246,7 @@
                             {% if session['is_admin'] %}
                             <label class="flex items-center gap-1 text-[10px] text-zinc-400"><input type="checkbox" name="is_universal" value="1"> Universal</label>
                             {% endif %}
-                            <button type="submit" class="w-full bg-zinc-800 text-xs text-white py-1 rounded">Log Index Document</button>
+                            <button type="submit" class="w-full bg-zinc-800 text-xs text-white py-1 rounded">Add SOP</button>
                         </form>
                     </div>
 

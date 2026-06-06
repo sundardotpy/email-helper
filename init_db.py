@@ -5,8 +5,7 @@ from werkzeug.security import generate_password_hash
 
 # Fallback string provided by you if the environment variable isn't set yet
 NEON_DB_URL = os.environ.get(
-    'DATABASE_URL', 
-    'postgresql://neondb_owner:npg_UmcTfkaWHL39@ep-round-shape-ao30m667-pooler.c-2.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require'
+    'DATABASE_URL',
 )
 
 def init_db():
